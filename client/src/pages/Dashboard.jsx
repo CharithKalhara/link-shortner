@@ -40,7 +40,7 @@ export default function Dashboard() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(() => localStorage.getItem("url-shortener-theme") === "dark");
 
-  const username = "alex.morgan";
+  const username = "Charith";
 
   useEffect(() => {
     document.documentElement.setAttribute("data-bs-theme", isDarkMode ? "dark" : "light");
