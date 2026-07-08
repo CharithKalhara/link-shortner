@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import urlRoutes from "./routes/urlRoutes.js";
+import { redirectUrl } from "./controllers/urlcontroller.js";
 import corsOptions from "./config/corsOptions.js";
 
 const app = express();
@@ -17,6 +18,6 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api", urlRoutes);
-app.use("/", urlRoutes);
+app.get("/:code", redirectUrl);
 
 export default app;

@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 
 import urlRoutes from "./routes/urlRoutes.js";
+import { redirectUrl } from "./controllers/urlcontroller.js";
 import corsOptions from "./config/corsOptions.js";
 
 dotenv.config();
@@ -14,12 +15,19 @@ app.use(cors(corsOptions));
 app.options(/.*/, cors(corsOptions));
 app.use(express.json());
 
+app.get("/", (req, res) => {
+  res.json({
+    success: true,
+    message: "URL Shortener API Running",
+  });
+});
+
 mongoose.connect(process.env.MONGO_URI)
 .then(() => console.log("MongoDB Connected"))
 .catch(console.error);
 
 app.use("/api", urlRoutes);
-app.use("/", urlRoutes);
+app.get("/:code", redirectUrl);
 
 const PORT = process.env.PORT || 5000;
 
