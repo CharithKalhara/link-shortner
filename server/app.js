@@ -1,10 +1,12 @@
 import express from "express";
 import cors from "cors";
 import urlRoutes from "./routes/urlRoutes.js";
+import corsOptions from "./config/corsOptions.js";
 
 const app = express();
 
-app.use(cors());
+app.use(cors(corsOptions));
+app.options(/.*/, cors(corsOptions));
 app.use(express.json());
 
 app.get("/", (req, res) => {
