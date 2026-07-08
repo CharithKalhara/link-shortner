@@ -2,29 +2,76 @@ import Url from "../models/Url.js";
 import generateCode from "../utils/generateCode.js";
 import validator from "validator";
 
+const MAX_CODE_ATTEMPTS = 10;
+
+function buildShortUrl(req, shortCode) {
+  const baseUrl = process.env.BASE_URL || `${req.protocol}://${req.get("host")}`;
+
+  return `${baseUrl.replace(/\/$/, "")}/${shortCode}`;
+}
+
+async function createUrlWithUniqueCode(originalUrl) {
+  for (let attempt = 0; attempt < MAX_CODE_ATTEMPTS; attempt++) {
+    const shortCode = generateCode();
+
+    try {
+      return await Url.create({
+        originalUrl,
+        shortCode,
+      });
+    } catch (err) {
+      if (err?.code === 11000 && err?.keyPattern?.shortCode) {
+        continue;
+      }
+
+      throw err;
+    }
+  }
+
+  throw new Error("Unable to generate a unique short code. Please try again.");
+}
+
 export const shortenUrl = async (req, res) => {
   try {
     const { originalUrl } = req.body;
+    const trimmedUrl = typeof originalUrl === "string" ? originalUrl.trim() : "";
 
-    // Validate URL
-    if (!validator.isURL(originalUrl)) {
+    if (!trimmedUrl) {
       return res.status(400).json({
-        message: "Invalid URL",
+        success: false,
+        message: "Please enter a URL to shorten.",
       });
     }
 
-    const shortCode = generateCode();
+    if (
+      !validator.isURL(trimmedUrl, {
+        require_protocol: true,
+        protocols: ["http", "https"],
+      })
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Please enter a valid URL that starts with http:// or https://.",
+      });
+    }
 
-    const url = await Url.create({
-      originalUrl,
-      shortCode,
+    const url = await createUrlWithUniqueCode(trimmedUrl);
+
+    res.status(201).json({
+      success: true,
+      data: {
+        _id: url._id,
+        originalUrl: url.originalUrl,
+        shortCode: url.shortCode,
+        shortUrl: buildShortUrl(req, url.shortCode),
+        clicks: url.clicks,
+        createdAt: url.createdAt,
+      },
     });
-
-    res.status(201).json(url);
-
   } catch (err) {
     res.status(500).json({
-      message: err.message,
+      success: false,
+      message: err.message || "Failed to create short URL. Please try again.",
     });
   }
 };

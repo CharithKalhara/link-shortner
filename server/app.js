@@ -14,6 +14,7 @@ app.get("/", (req, res) => {
   });
 });
 
+app.use("/api", urlRoutes);
 app.use("/", urlRoutes);
 
 export default app;

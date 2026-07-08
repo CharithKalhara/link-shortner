@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import Navbar from "../components/Navbar.jsx";
+import CreateShortLink from "../components/CreateShortLink.jsx";
 import StatsCards from "../components/StatsCards.jsx";
 import SearchBar from "../components/SearchBar.jsx";
 import UrlTable from "../components/UrlTable.jsx";
 import DeleteModal from "../components/DeleteModal.jsx";
 import LoadingSpinner from "../components/LoadingSpinner.jsx";
-import { deleteUrl, getDashboard, getUrls } from "../services/api.js";
+import { createUrl, deleteUrl, getDashboard, getUrls } from "../services/api.js";
 
 const defaultStats = {
   totalUrls: 0,
@@ -115,6 +116,24 @@ export default function Dashboard() {
     }
   };
 
+  const handleCreateUrl = async (originalUrl) => {
+    const createdUrl = await createUrl(originalUrl);
+    const tableUrl = {
+      ...createdUrl,
+      clicks: createdUrl.clicks ?? 0,
+      createdAt: createdUrl.createdAt || new Date().toISOString(),
+    };
+
+    setUrls((currentUrls) => {
+      const nextUrls = [tableUrl, ...currentUrls];
+      setStats(buildStatsFromUrls(nextUrls));
+      return nextUrls;
+    });
+    setErrorMessage("");
+
+    return createdUrl;
+  };
+
   const handleOpen = (originalUrl) => {
     window.open(originalUrl, "_blank", "noopener,noreferrer");
   };
@@ -209,6 +228,10 @@ export default function Dashboard() {
         ) : null}
 
         {loading ? <LoadingSpinner /> : <StatsCards stats={stats} />}
+
+        <div className="mt-4">
+          <CreateShortLink onCreate={handleCreateUrl} onCopy={handleCopy} />
+        </div>
 
         <div className="mt-4">
           <SearchBar searchTerm={searchTerm} onSearchChange={setSearchTerm} resultCount={filteredUrls.length} />

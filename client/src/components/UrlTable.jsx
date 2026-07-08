@@ -10,6 +10,17 @@ function formatDate(value) {
   });
 }
 
+function getShortUrl(url) {
+  if (url.shortUrl) {
+    return url.shortUrl;
+  }
+
+  const apiBaseUrl = import.meta.env.VITE_API_URL || "http://192.168.1.6:5000/api";
+  const publicBaseUrl = import.meta.env.VITE_PUBLIC_BASE_URL || apiBaseUrl.replace(/\/api\/?$/, "");
+
+  return `${publicBaseUrl.replace(/\/$/, "")}/${url.shortCode}`;
+}
+
 export default function UrlTable({ urls, onCopy, onOpen, onDelete, emptyMessage = "No shortened URLs yet" }) {
   if (!urls.length) {
     return (
@@ -46,7 +57,7 @@ export default function UrlTable({ urls, onCopy, onOpen, onDelete, emptyMessage 
           </thead>
           <tbody>
             {urls.map((url) => {
-              const shortUrl = `http://localhost:5000/${url.shortCode}`;
+              const shortUrl = getShortUrl(url);
 
               return (
                 <tr key={url._id || url.shortCode}>

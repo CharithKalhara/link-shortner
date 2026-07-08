@@ -197,6 +197,25 @@ a {
   box-shadow: var(--dashboard-shadow);
 }
 
+.create-link-panel .form-control {
+  border-color: var(--dashboard-border);
+}
+
+.short-url-result {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--dashboard-border);
+  border-radius: 1rem;
+  background: rgba(37, 99, 235, 0.06);
+}
+
+.short-url-result a {
+  overflow-wrap: anywhere;
+}
+
 .empty-state {
   padding: 4rem 1.5rem;
   text-align: center;
@@ -227,5 +246,10 @@ a {
 @media (max-width: 575.98px) {
   .truncate-url {
     max-width: 200px;
+  }
+
+  .short-url-result {
+    align-items: stretch;
+    flex-direction: column;
   }
 }

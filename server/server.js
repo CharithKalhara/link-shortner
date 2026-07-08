@@ -17,6 +17,7 @@ mongoose.connect(process.env.MONGO_URI)
 .catch(console.error);
 
 app.use("/api", urlRoutes);
+app.use("/", urlRoutes);
 
 const PORT = process.env.PORT || 5000;
 

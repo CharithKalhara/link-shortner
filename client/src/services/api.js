@@ -14,7 +14,7 @@ export const getDashboard = async () => {
 
 export const createUrl = async (originalUrl) => {
   const response = await api.post("/shorten", { originalUrl });
-  return response.data;
+  return response.data?.data ?? response.data;
 };
 
 export const getUrls = async () => {
