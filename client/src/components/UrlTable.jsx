@@ -15,7 +15,7 @@ function getShortUrl(url) {
     return url.shortUrl;
   }
 
-  const apiBaseUrl = import.meta.env.VITE_API_URL || "http://192.168.1.6:5000/api";
+  const apiBaseUrl = import.meta.env.VITE_API_URL || "https://server-33tius242-charith-s-projects.vercel.app/api";
   const publicBaseUrl = import.meta.env.VITE_PUBLIC_BASE_URL || apiBaseUrl.replace(/\/api\/?$/, "");
 
   return `${publicBaseUrl.replace(/\/$/, "")}/${url.shortCode}`;
